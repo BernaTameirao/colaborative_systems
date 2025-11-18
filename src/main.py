@@ -18,6 +18,27 @@ from agent_rag import (
 
 USERS = ["Administrador", "Salmaze", "Bernardo", "Rafa4", "Samuel"]
 
+intro_msg = {
+    "role":"assistant",
+    "content":
+    ("""
+    \n
+    # Como utilizar o Competição de Redação?
+
+    ## Como Administrador:
+    * Utilize "@add <tema>" para adicionar novos temas.
+    * Utilize "@begin_contest" para iniciar o concurso de redação após o tema ter sido definido pelos usuários.
+    
+    
+    ## Como Usuário:
+    * Vote no tema que você deseja escrever sobre.
+
+    * Utilize "@llm <prompt>" para pedir a opinião ou ajuda da LLM.
+    * Utilize "@entry <texto>" para enviar seu texto, depois disso, vote seu texto preferido.
+    
+    * Quando todos tiverem votados, teremos um vencedor!""")
+}
+
 def main():
     load_dotenv()
     ensure_session_state()
@@ -212,7 +233,7 @@ def ensure_session_state():
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
     if "messages" not in st.session_state:
-        st.session_state.messages = [] 
+        st.session_state.messages = [intro_msg] 
     if "retriever" not in st.session_state:
         st.session_state.retriever = None
     if "llm" not in st.session_state:
