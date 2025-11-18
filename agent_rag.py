@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 def build_llm(temperature: float = 0):
     llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-20b",
         temperature=temperature,
         max_tokens=None,
         timeout=None,
@@ -72,6 +72,7 @@ def build_agent(retriever, llm):
     class AgentState(TypedDict):
         messages: Annotated[Sequence[BaseMessage], add_messages]
 
+
     def should_continue(state: AgentState):
         last = state["messages"][-1]
         return hasattr(last, "tool_calls") and len(last.tool_calls) > 0
@@ -79,6 +80,7 @@ def build_agent(retriever, llm):
     system_prompt = (
         "You are an assistant that answers questions about the PDF loaded into the knowledge base. "
         "Verify information with citations to the specific parts of the document."
+        "Only use the knowledge base if the user talks about algorithms or mentions the pdf directly"
     )
 
     tools_dict = {t.name: t for t in tools}
