@@ -22,15 +22,12 @@ def build_llm(temperature: float = 0):
         max_retries=2,
     )
     return llm
-
-
 def build_embeddings():
     embeddings = (
         HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-mpnet-base-v2"
         ))
     return embeddings
-
 
 def load_pdf_pages(file_path: str):
     if not os.path.exists(file_path):
@@ -57,11 +54,13 @@ def build_vectorstore_from_pages(pages, embeddings, persist_directory: str = "./
 def build_retriever(vectorstore, k: int = 7):
     return vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": k})
 
-
 def build_agent(retriever, llm):
     @tool
     def retriever_tool(query: str) -> str:
         """Search and return relevant chunks from the loaded PDF"""
+        if retriever is None:
+            return None
+
         docs = retriever.invoke(query)
         if not docs:
             return "No relevant info was found in the document"
@@ -116,20 +115,20 @@ def build_agent(retriever, llm):
     graph.set_entry_point("llm")
     return graph.compile()
 
-def get_agent():
-    load_dotenv()
+# def get_agent():
+#     load_dotenv()
 
-    file_path: str = "temp.pdf"
-    persist_directory: str = "./vdb"
+#     file_path: str = "temp.pdf"
+#     persist_directory: str = "./vdb"
 
-    llm = build_llm()
-    embeddings = build_embeddings()
-    pages = load_pdf_pages(file_path)
-    vectorstore = build_vectorstore_from_pages(pages, embeddings, persist_directory=persist_directory)
-    retriever = build_retriever(vectorstore)
-    agent = build_agent(retriever, llm)
+#     llm = build_llm()
+#     embeddings = build_embeddings()
+#     pages = load_pdf_pages(file_path)
+#     vectorstore = build_vectorstore_from_pages(pages, embeddings, persist_directory=persist_directory)
+#     retriever = build_retriever(vectorstore)
+#     agent = build_agent(retriever, llm)
 
-    return agent
+#     return agent
 
 def run_rag_agent_cli(file_path: str = "temp.pdf", persist_directory: str = "./vdb"):
     load_dotenv()
