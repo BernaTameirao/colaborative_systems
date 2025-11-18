@@ -22,12 +22,15 @@ def build_llm(temperature: float = 0):
         max_retries=2,
     )
     return llm
+
+
 def build_embeddings():
     embeddings = (
         HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-mpnet-base-v2"
         ))
     return embeddings
+
 
 def load_pdf_pages(file_path: str):
     if not os.path.exists(file_path):
@@ -53,6 +56,7 @@ def build_vectorstore_from_pages(pages, embeddings, persist_directory: str = "./
 
 def build_retriever(vectorstore, k: int = 7):
     return vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": k})
+
 
 def build_agent(retriever, llm):
     @tool
